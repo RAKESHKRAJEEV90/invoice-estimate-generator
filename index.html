@@ -58,6 +58,74 @@
                 top: 0;
             }
         }
+
+
+.footer {
+    background-color: #f8f9fa;
+    padding: 20px 0;
+    margin-top: 40px;
+    border-top: 1px solid #e7e7e7;
+}
+
+.footer-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.footer p {
+    margin: 0;
+    color: #6c757d;
+}
+
+.donation-buttons {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.donation-button {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 4px;
+    text-decoration: none;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.donation-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.coffee-button img {
+    height: 40px;
+}
+
+.paypal-button {
+    background-color: #0070ba;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+    padding: 8px 12px;
+}
+
+.paypal-button img {
+    height: 20px;
+    margin-right: 8px;
+}
+@media (max-width: 768px) {
+    .footer-content {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .donation-buttons {
+        margin-top: 15px;
+    }
+}
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
@@ -193,9 +261,18 @@
         </div>
     </div>
 
-    <footer class="bg-white text-gray-600 p-4 mt-10 custom-shadow">
-        <div class="container mx-auto text-center">
-            <p>&copy; 2024  Invoice/Estimate Generator. All rights reserved.</p>
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Invoice/Estimate Generator. All rights reserved.</p>
+            <div class="donation-buttons">
+                <a href="https://www.buymeacoffee.com/rk_dev" target="_blank" class="donation-button coffee-button">
+                    <img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me A Coffee">
+                </a>
+                <a href="https://paypal.me/rkdevz?country.x=IN&locale.x=en_GB" target="_blank" class="donation-button paypal-button">
+                    <img src="https://www.paypalobjects.com/webstatic/en_US/i/buttons/PP_logo_h_100x26.png" alt="PayPal">
+                    <span>Donate</span>
+                </a>
+            </div>
         </div>
     </footer>
 
