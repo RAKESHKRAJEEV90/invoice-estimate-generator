@@ -116,7 +116,7 @@
     height: 20px;
     margin-right: 8px;
 }
-@media (max-width: 768px) {
+@media (max-width: 640px) {
     .footer-content {
         flex-direction: column;
         text-align: center;
@@ -125,16 +125,36 @@
     .donation-buttons {
         margin-top: 15px;
     }
+
+    nav .container > div {
+        flex-direction: column;
+    }
+    nav h1 {
+        margin-bottom: 1rem;
+    }
+    nav .flex.space-x-4 {
+        width: 100%;
+        justify-content: space-around;
+    }
+  
 }
     </style>
 </head>
 <body class="bg-gray-100 font-sans">
     <nav class="bg-white text-gray-800 p-4 custom-shadow">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-2xl font-bold text-gray-800"> <span class="text-green-500">Invoice/Estimate</span> Generator</h1>
-            <div>
-                <button onclick="showPage('landing')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300">Home</button>
-                <button onclick="showPage('create-document')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300">Create Document</button>
+        <div class="container mx-auto">
+            <div class="flex flex-col sm:flex-row justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-800 mb-4 sm:mb-0">
+                   <span class="text-green-500">Invoice/Estimate</span> Generator
+                </h1>
+                <div class="flex space-x-4">
+                    <button onclick="showPage('landing')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300 focus:outline-none">
+                        Home
+                    </button>
+                    <button onclick="showPage('create-document')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300 focus:outline-none">
+                        Create
+                    </button>
+                </div>
             </div>
         </div>
     </nav>
