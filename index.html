@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice/Estimate Generator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-green: #10B981;
+            --dark-green: #059669;
+            --light-green: #D1FAE5;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F3F4F6;
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+        .logo-preview { 
+            width: 100px; 
+            height: 100px; 
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            border: 2px dashed var(--primary-green);
+            border-radius: 10px;
+        }
+        .custom-shadow {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background-color: var(--primary-green);
+            color: white;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: var(--dark-green);
+        }
+        .input-field {
+            border: 1px solid #E5E7EB;
+            transition: all 0.3s ease;
+        }
+        .input-field:focus {
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px var(--light-green);
+        }
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #document-content, #document-content * {
+                visibility: visible;
+            }
+            #document-content {
+                position: absolute;
+                left: 0;
+                top: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans">
+    <nav class="bg-white text-gray-800 p-4 custom-shadow">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-2xl font-bold text-gray-800"> <span class="text-green-500">Invoice/Estimate</span> Generator</h1>
+            <div>
+                <button onclick="showPage('landing')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300">Home</button>
+                <button onclick="showPage('create-document')" class="px-4 py-2 text-gray-600 hover:text-green-500 transition duration-300">Create Document</button>
+            </div>
+        </div>
+    </nav>
+
+    <div id="landing" class="page active">
+        <div class="container mx-auto mt-10 p-8 bg-white rounded-lg custom-shadow">
+            <h2 class="text-4xl font-bold mb-6 text-center text-gray-800">Welcome to <span class="text-green-500">Invoice/Estimate</span> Generator</h2>
+            <form id="business-setup-form" class="space-y-6">
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="business-name">Business Name</label>
+                    <input class="input-field shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="business-name" type="text" placeholder="Your Business Name" required>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="logo-upload">Logo (Optional)</label>
+                    <input class="input-field shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="logo-upload" type="file" accept="image/*">
+                    <div id="logo-preview" class="logo-preview mt-4 mx-auto"></div>
+                </div>
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="gst-number">GST Number (Optional)</label>
+                    <input class="input-field shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="gst-number" type="text" placeholder="Your GST Number">
+                </div>
+                <div class="flex justify-center">
+                    <button type="button" onclick="saveBusinessInfo()" class="btn-primary font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                        Save & Continue
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="create-document" class="page">
+        <div class="container mx-auto mt-10">
+            <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">Create New <span class="text-green-500">Document</span></h2>
+            <form id="document-form" class="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4">
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="document-type">Document Type</label>
+                    <select class="input-field shadow appearance-none border rounded w-full py-3 px-4 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="document-type" required>
+                        <option value="invoice">Invoice</option>
+                        <option value="estimate">Estimate</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="client-name">
+                        Client Name
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="client-name" type="text" placeholder="Client Name" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="event-date">
+                        Event Date
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="event-date" type="date" required>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="pax">
+                        PAX
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="pax" type="number" placeholder="Number of guests" required>
+                </div>
+                <div id="items-container">
+                    <!-- Items will be added here dynamically -->
+                </div>
+                <div class="mb-4">
+                    <button type="button" onclick="addItem()" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
+                        + Add Item
+                    </button>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="service-charge">
+                        Service Charge (%)
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="service-charge" type="number" min="0" max="100" placeholder="Optional">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-type">
+                        Discount Type
+                    </label>
+                    <select class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="discount-type">
+                        <option value="none">No Discount</option>
+                        <option value="percentage">Percentage</option>
+                        <option value="fixed">Fixed Amount</option>
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="discount-value">
+                        Discount Value
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="discount-value" type="number" min="0" placeholder="Enter discount value">
+                </div>
+                <div class="mb-4">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="advance-payment">
+                        Advance Payment (₹)
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" id="advance-payment" type="number" min="0" placeholder="Optional">
+                </div>
+                <div class="mb-6">
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="gst">
+                        GST (%)
+                    </label>
+                    <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-wide focus:outline-none focus:shadow-outline" id="gst" type="number" min="0" max="100" placeholder="Optional">
+                </div>
+                <div class="flex items-center justify-between mt-6">
+                    <button type="button" onclick="generateDocument()" class="btn-primary font-bold py-3 px-6 rounded-full focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                        Generate Document
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="view-document" class="page">
+        <div class="container mx-auto mt-10">
+            <div id="document-content" class="bg-white shadow-lg rounded-lg px-8 pt-6 pb-8 mb-4">
+                <!-- Document content will be inserted here -->
+            </div>
+            <div class="flex justify-center space-x-4">
+                <button onclick="editDocument()" class="bg-yellow-500 hover:bg-yellow-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                    Edit
+                </button>
+                <button onclick="printDocument()" class="bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transform transition hover:scale-105 duration-300 ease-in-out">
+                    Print / Save as PDF
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="bg-white text-gray-600 p-4 mt-10 custom-shadow">
+        <div class="container mx-auto text-center">
+            <p>&copy; 2024  Invoice/Estimate Generator. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        let businessName = '';
+        let logoUrl = '';
+        let gstNumber = '';
+
+        function showPage(pageId) {
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            document.getElementById(pageId).classList.add('active');
+        }
+
+        function saveBusinessInfo() {
+            businessName = document.getElementById('business-name').value;
+            gstNumber = document.getElementById('gst-number').value;
+            const logoFile = document.getElementById('logo-upload').files[0];
+            
+            if (logoFile) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    logoUrl = e.target.result;
+                    showPage('create-document');
+                };
+                reader.readAsDataURL(logoFile);
+            } else {
+                showPage('create-document');
+            }
+        }
+
+        document.getElementById('logo-upload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('logo-preview').style.backgroundImage = `url(${e.target.result})`;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        function addItem() {
+            const container = document.getElementById('items-container');
+            const itemIndex = container.children.length + 1;
+            const newItem = document.createElement('div');
+            newItem.className = 'mb-4 flex space-x-2';
+            newItem.innerHTML = `
+                <input class="shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="text" placeholder="Item ${itemIndex}" required>
+                <input class="shadow appearance-none border rounded w-1/2 py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="number" placeholder="Price" required>
+            `;
+            container.appendChild(newItem);
+        }
+
+        function generateDocument() {
+            const documentType = document.getElementById('document-type').value;
+            const clientName = document.getElementById('client-name').value;
+            const eventDate = document.getElementById('event-date').value;
+            const pax = document.getElementById('pax').value;
+            const serviceCharge = document.getElementById('service-charge').value;
+            const discountType = document.getElementById('discount-type').value;
+            const discountValue = parseFloat(document.getElementById('discount-value').value) || 0;
+            const advancePayment = parseFloat(document.getElementById('advance-payment').value) || 0;
+            const gst = document.getElementById('gst').value;
+
+            let items = [];
+            let subtotal = 0;
+            document.querySelectorAll('#items-container > div').forEach(row => {
+                const particular = row.children[0].value;
+                const price = parseFloat(row.children[1].value);
+                if (particular && price) {
+                    items.push({ particular, price });
+                    subtotal += price;
+                }
+            });
+
+            let serviceChargeAmount = 0;
+            let gstAmount = 0;
+            let discountAmount = 0;
+            let total = subtotal;
+
+            if (serviceCharge) {
+                serviceChargeAmount = (subtotal * serviceCharge) / 100;
+                total += serviceChargeAmount;
+            }
+
+            if (discountType === 'percentage') {
+                discountAmount = (total * discountValue) / 100;
+            } else if (discountType === 'fixed') {
+                discountAmount = discountValue;
+            }
+            total -= discountAmount;
+
+            if (gst) {
+                gstAmount = (total * gst) / 100;
+                total += gstAmount;
+            }
+
+            const balanceDue = total - advancePayment;
+            
+            const documentContent = `
+                <div class="flex justify-between items-center mb-6">
+                    ${logoUrl ? `<img src="${logoUrl}" alt="Business Logo" class="h-20">` : ''}
+                    <div class="text-right">
+                        <h2 class="text-3xl font-bold text-green-500">${documentType.toUpperCase()}</h2>
+                        <p class="text-gray-600">Date: ${new Date().toLocaleDateString()}</p>
+                        ${gstNumber ? `<p class="text-gray-600">GST No: ${gstNumber}</p>` : ''}
+                    </div>
+                </div>
+                <div class="mb-6">
+                    <h3 class="text-2xl font-bold text-gray-800">${businessName}</h3>
+                    <h4 class="text-xl text-gray-700">Client: ${clientName}</h4>
+                    <p class="text-gray-600">Event Date: ${eventDate}</p>
+                    <p class="text-gray-600">PAX: ${pax}</p>
+                </div>
+                <table class="w-full mb-6">
+                    <thead>
+                        <tr class="bg-green-100">
+                            <th class="px-4 py-2 text-left text-green-800">Particular</th>
+                            <th class="px-4 py-2 text-right text-green-800">Price (₹)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${items.map(item => `
+                            <tr>
+                                <td class="border-b border-gray-200 px-4 py-2 text-gray-700">${item.particular}</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-gray-700">${item.price.toFixed(2)}</td>
+                            </tr>
+                        `).join('')}
+                        <tr>
+                            <td class="border-b border-gray-200 px-4 py-2 font-bold text-gray-800">Subtotal</td>
+                            <td class="border-b border-gray-200 px-4 py-2 text-right font-bold text-gray-800">${subtotal.toFixed(2)}</td>
+                        </tr>
+                        ${serviceCharge ? `
+                            <tr>
+                                <td class="border-b border-gray-200 px-4 py-2 text-gray-700">Service Charge (${serviceCharge}%)</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-gray-700">${serviceChargeAmount.toFixed(2)}</td>
+                            </tr>
+                        ` : ''}
+                        ${discountAmount > 0 ? `
+                            <tr>
+                                <td class="border-b border-gray-200 px-4 py-2 text-gray-700">Discount (${discountType === 'percentage' ? discountValue + '%' : '₹' + discountValue})</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-gray-700">-${discountAmount.toFixed(2)}</td>
+                            </tr>
+                        ` : ''}
+                        ${gst ? `
+                            <tr>
+                                <td class="border-b border-gray-200 px-4 py-2 text-gray-700">GST (${gst}%)</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-gray-700">${gstAmount.toFixed(2)}</td>
+                            </tr>
+                        ` : ''}
+                        <tr class="font-bold">
+                            <td class="border-b border-gray-200 px-4 py-2 text-green-600">Total</td>
+                            <td class="border-b border-gray-200 px-4 py-2 text-right text-green-600">${total.toFixed(2)}</td>
+                        </tr>
+                        ${advancePayment > 0 ? `
+                            <tr>
+                                <td class="border-b border-gray-200 px-4 py-2 text-gray-700">Advance Payment</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-gray-700">-${advancePayment.toFixed(2)}</td>
+                            </tr>
+                            <tr class="font-bold">
+                                <td class="border-b border-gray-200 px-4 py-2 text-green-600">Balance Due</td>
+                                <td class="border-b border-gray-200 px-4 py-2 text-right text-green-600">${balanceDue.toFixed(2)}</td>
+                            </tr>
+                        ` : ''}
+                    </tbody>
+                </table>
+                <div class="text-sm">
+                    <p class="font-bold text-gray-700">In Words: ${numberToWords(balanceDue > 0 ? balanceDue : total)} Rupees Only</p>
+                    <p class="mt-4 italic text-gray-600">Declaration: We declare that this ${documentType} shows the actual details of services described and that all particulars are true and correct.</p>
+                </div>
+            `;
+
+            document.getElementById('document-content').innerHTML = documentContent;
+            showPage('view-document');
+        }
+
+    function editDocument() {
+        showPage('create-document');
+    }
+
+    function printDocument() {
+        window.print();
+    }
+    function numberToWords(number) {
+            const ones = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+
+            function convertLessThanOneThousand(n) {
+                if (n === 0) return '';
+                if (n < 10) return ones[n];
+                if (n < 20) return teens[n - 10];
+                if (n < 100) return tens[Math.floor(n / 10)] + (n % 10 !== 0 ? ' ' + ones[n % 10] : '');
+                return ones[Math.floor(n / 100)] + ' Hundred' + (n % 100 !== 0 ? ' and ' + convertLessThanOneThousand(n % 100) : '');
+            }
+
+            if (number === 0) return 'Zero';
+
+            const parts = [];
+            if (number >= 10000000) {
+                parts.push(convertLessThanOneThousand(Math.floor(number / 10000000)) + ' Crore');
+                number %= 10000000;
+            }
+            if (number >= 100000) {
+                parts.push(convertLessThanOneThousand(Math.floor(number / 100000)) + ' Lakh');
+                number %= 100000;
+            }
+            if (number >= 1000) {
+                parts.push(convertLessThanOneThousand(Math.floor(number / 1000)) + ' Thousand');
+                number %= 1000;
+            }
+            if (number > 0) {
+                parts.push(convertLessThanOneThousand(number));
+            }
+            return parts.join(' ');
+        }
+
+        // Initialize with one item row
+        addItem();
+    </script>
+</body>
+</html>
